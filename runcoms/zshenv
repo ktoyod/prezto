@@ -9,3 +9,6 @@
 if [[ ( "$SHLVL" -eq 1 && ! -o LOGIN ) && -s "${ZDOTDIR:-$HOME}/.zprofile" ]]; then
   source "${ZDOTDIR:-$HOME}/.zprofile"
 fi
+
+# refer: https://github.com/romkatv/powerlevel10k/issues/174
+POWERLEVEL9K_INSTALLATION_DIR=${HOME}/.zprezto/modules/prompt/external/powerlevel10k
