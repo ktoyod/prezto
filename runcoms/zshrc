@@ -1,3 +1,10 @@
+# Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
+# Initialization code that may require console input (password prompts, [y/n]
+# confirmations, etc.) must go above this block; everything else may go below.
+if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
+  source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
+fi
+
 #
 # Executes commands at the start of an interactive session.
 #
@@ -11,3 +18,64 @@ if [[ -s "${ZDOTDIR:-$HOME}/.zprezto/init.zsh" ]]; then
 fi
 
 # Customize to your needs...
+
+HISTFILE=$HOME/.zsh_history
+HISTSIZE=10000
+SAVEHIST=10000
+
+# ビープ音無効
+setopt no_beep
+
+#
+# Environment Variables
+#
+export EDITOR='vim'
+export VISUAL='vim'
+
+#
+# Aliases
+#
+alias ls='ls -aG'
+alias sed='gsed'
+alias vim='nvim'
+# refer: https://github.com/remind101/assume-role
+alias assume-role='function(){eval $(command assume-role -duration 1h $@);}'
+
+# for anyenv; refer: https://github.com/anyenv/anyenv
+eval "$(anyenv init -)"
+
+#
+# Go
+#
+export PATH=$PATH:$HOME/go/bin
+
+
+# To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
+[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
+
+#
+# peco
+#
+# コマンド履歴の検索
+# refer: https://blog2.logical-dice.com/posts/wp/259/
+function peco-history-selection() {  
+    BUFFER=`history -n 1 | tail -r  | awk '!a[$0]++' | peco`  
+    CURSOR=$#BUFFER  
+    zle reset-prompt  
+}  
+zle -N peco-history-selection  
+bindkey '^R' peco-history-selection 
+
+# Githubからクローンしたディレクトリへ移動
+# refer: https://zenn.dev/obregonia1/articles/e82868e8f66793
+function peco-src () {
+  local selected_dir=$(ghq list -p | peco --query "$LBUFFER")
+  if [ -n "$selected_dir" ]; then
+    BUFFER="cd ${selected_dir}"
+    zle accept-line
+  fi
+  zle reset-prompt
+}
+zle -N peco-src
+bindkey '^]' peco-src
+
